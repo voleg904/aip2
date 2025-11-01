@@ -15,11 +15,11 @@ void input(size_t *arr, size_t l){
   }
 }
 
-size_t **make(size_t r, size_t c){
-  int **mtx = new int *[r];
+size_t **make(size_t r,const size_t *lns){
+  size_t **mtx = new size_t *[r];
   for (size_t i = 0; i<r; ++i){
     try{
-      mtx[i] = new int[c];
+      mtx[i] = new size_t[lns[i]];
     }
     catch (const std::bad_alloc &){
       for (size_t j = 0; j<i; ++j){
@@ -28,13 +28,15 @@ size_t **make(size_t r, size_t c){
       delete[] mtx;
     }
   }
+  return mtx;
 }
+
 size_t ** convert(const size_t * t, size_t n, const size_t * lns, size_t rows){
-  size_t **result = make(n,rows);
+  size_t **result = make(rows,t);
   int flag = 0;
   for (size_t i = 0;i<n;++i){
     for (size_t j = 0; j<t[i]; ++j){
-      result[i][j] = t[flag];
+      result[i][j] = lns[flag];
       flag++;
     }
   }
