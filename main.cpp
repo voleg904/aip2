@@ -1,47 +1,74 @@
 #include <iostream>
 #include <new>
 
-void output(const int *const *mtx, int r, int c){
-  for (size_t i = 0; i < r; ++i){
-    for (size_t j = 0; j < c; ++j){
+void output(const size_t *const *mtx, size_t n, const size_t * rows){
+  for (size_t i = 0; i < n; ++i){
+    for (size_t j = 0; j < rows[i]; ++j){
       std::cout << mtx[i][j] << ' ';
     }
     std::cout << '\n';
   }
 }
-void input(int *arr, int l){
+void input(size_t *arr, size_t l){
   for (size_t i = 0; i < l; ++i){
     std::cin >> arr[i];
   }
 }
-int ** convert(const int * t, size_t n, const size_t * lns, size_t rows);
+
+size_t **make(size_t r, size_t c){
+  int **mtx = new int *[r];
+  for (size_t i = 0; i<r; ++i){
+    try{
+      mtx[i] = new int[c];
+    }
+    catch (const std::bad_alloc &){
+      for (size_t j = 0; j<i; ++j){
+        delete[] mtx[j];
+      }
+      delete[] mtx;
+    }
+  }
+}
+size_t ** convert(const size_t * t, size_t n, const size_t * lns, size_t rows){
+  size_t **result = make(n,rows);
+  int flag = 0;
+  for (size_t i = 0;i<n;++i){
+    for (size_t j = 0; j<t[i]; ++j){
+      result[i][j] = t[flag];
+      flag++;
+    }
+  }
+  return result;
+}
 
 
 int main(){
   int n = 0,rows = 0;
-  int **result = nullptr;
+  size_t **result = nullptr;
   std::cin >> n >> rows;
   if (std::cin.fail()){
     return 1;
   }
-  int *rowl = nullptr;
-  int *arr = nullptr;
+  size_t *rowl = nullptr;
+  size_t *arr = nullptr;
   try{
-    rowl = new int[n];
-    arr = new int[rows]; 
+    rowl = new size_t[n];
+    arr = new size_t[rows]; 
   }
   catch (const std::bad_alloc &){
-    delete rowl;
-    delete arr;
+    delete[] rowl;
+    delete[] arr;
     return 2;
   }
   input(rowl,n);
   input(arr,rows);
   if (std::cin.fail()){
-    delete rowl;
-    delete arr;
+    delete[] rowl;
+    delete[] arr;
     return 1;
   }
+  result = convert(rowl,n,arr,rows);
+  output(result,n,rowl);
 }
 
 
